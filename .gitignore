@@ -1,0 +1,5 @@
+_Store
+.idea
+npm-debug.log
+.php_cs.cache
+.swp
