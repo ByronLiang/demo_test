@@ -27,6 +27,6 @@ class AppServiceProvider extends ServiceProvider
 
         // $this->app->singleton('qiniu', \App\Services\QiniuService::class);
 
-        // $this->app->singleton('wechat', \App\Services\WechatService::class);
+        $this->app->singleton('wechat', \App\Services\WechatService::class);
     }
 }

@@ -18,6 +18,8 @@ class WechatService
             'debug' => $cfg['debug'],
             'app_id' => $cfg['appid'],
             'secret' => $cfg['appsecret'],
+            'token'   => $cfg['token'],
+            'aes_key' => '',
             'log' => [
                 'level' => 'debug',
                 'file' => storage_path('logs/wechat-'.date('Y-m-d').'.log'),
@@ -98,5 +100,19 @@ class WechatService
         } else {
             Log::error('wechat refund fail: '.json_encode($result));
         }
+    }
+
+    public function hola()
+    {
+        $server = $this->app->server;
+        $msg = $server->getMessage();
+        Log::info($msg);
+        $response = $server->setMessageHandler(function ($message) use ($msg) {
+            return "您好！欢迎使用 EasyWeChat;your input is" . $msg['Content'];
+        });
+
+        return $response->serve();
+
+        // return $server->serve();
     }
 }

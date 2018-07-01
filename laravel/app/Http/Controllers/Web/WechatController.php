@@ -12,7 +12,7 @@ class WechatController extends Controller
 {
     public function getWechatCode()
     {
-        $callback = urlencode('http://byron.free.ngrok.cc/web/wechat/login');
+        $callback = urlencode('http://16e01e61.ngrok.io/web/wechat/login');
         $url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx287a861a2bc42046&redirect_uri='. $callback . '&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
         $code = QrCode::size(200)->generate($url);
 
