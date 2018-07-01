@@ -67,7 +67,7 @@
                     </el-form-item>
                 </div>
                 <div class="form-box mt-4">
-                    <el-form-item label="价格" prop="drink_price">
+                    <el-form-item label="价格" prop="price">
                         <el-input v-model.number="form.price"></el-input>
                     </el-form-item>
                     <el-form-item label="是否推荐" prop="recommend">
@@ -99,16 +99,19 @@
                     <el-button type="normal" @click="handleHightLight(39)" v-if="form.video">精彩点二</el-button>
                     <el-button type="normal" @click="handleHightLight(69)" v-if="form.video">精彩点三</el-button>
                 </div>
-                    <el-form-item label="视频截图" id="video_poster" prop="video_poster">
+                    <el-form-item label="视频截图">
                             <!-- <img :src="form.video_poster" class="image" v-if="form.video_poster"
                                 style="width: 400px; height: 300px;"> -->
                         <div class="view-image-box" v-if="form.video">
                             <div class="view-image" v-for="(i, index) in form.video_poster" :key="index">
-                                <sample-img-upload v-model="i.picture" :config="{width: 300}">
+                                <!-- <sample-img-upload v-model="i.picture" :config="{width: 300}">
                                     <div class="image-box">
                                         <img :src="i.picture">
                                     </div>
-                                </sample-img-upload>
+                                </sample-img-upload> -->
+                                    <div class="image-box">
+                                        <img :src="i" style="width: 200px; height: 150px;">
+                                    </div>
                                     <i class="el-icon-remove" @click="removeImage(index)"></i>
                             </div>
                         </div>
@@ -128,7 +131,8 @@
                 <el-button type="primary" @click="highTime=15">15second</el-button>
             </div> -->
             <div class="flex justify-center mt1">
-                <el-button type="primary" @click="submit" :loading="isBtnLoading">{{ $route.params.id ? '修改' : '保存'}}</el-button>
+                <el-button type="primary" @click="submit" :loading="isBtnLoading">
+                    {{ $route.params.id ? '修改' : '保存'}}</el-button>
             </div>
         </el-form>
     </el-card>
@@ -150,8 +154,9 @@ export default {
                 price: '',
                 type: [],
                 author_id: '',
+                recommend: 1,
                 video_poster: [],
-                recommend: 1
+                video_node: []
             },
             options: [{
               value: '1',
@@ -162,7 +167,8 @@ export default {
             }],
             options4: [],
             options5: [],
-            author_options: []
+            author_options: [],
+            video_poster: []
         }
     },
     components: {
@@ -221,6 +227,19 @@ export default {
             }
         },
         cutPic() {
+            let video = this.$refs.video;
+            if (video) {
+                let second = parseInt(video.currentTime);
+                if (second > 0) {
+                    let img = this.form.video + '?vframe/jpg/offset/' + second + '/w/200/h/150';
+                    console.log(img);
+                    console.log(this.form.video_poster);
+                    this.form.video_poster.push(img);
+                }
+            }
+        },
+        // 只适用于本地视频文件的截图（不宜跨域）
+        localFileCutPic() {
                 var scale = 0.9;
                 let output = document.getElementById("video_poster");
                 let outValue = document.getElementsByName('video_poster')[0];
@@ -308,6 +327,12 @@ export default {
             API.get('product/edit/' + to.params.id).then((res) => {
                 next(vm => {
                     vm.form = res
+                    if (! res.video_poster) {
+                        vm.form.video_poster = [];
+                    }
+                    if (! res.video_node) {
+                        vm.form.video_node = [];
+                    }
                 });
             })
             return false;
@@ -358,6 +383,7 @@ export default {
         position: relative;
         overflow: hidden;
         height: 100%;
-        line-height: 200px;
+        line-height: 150px;
+        margin-top: 5px;
     }
 </style>

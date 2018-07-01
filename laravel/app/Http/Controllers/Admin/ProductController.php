@@ -22,7 +22,6 @@ class ProductController extends Controller
     public function getEdit($productId)
     {
         $product = Product::find($productId);
-        $product->type = [1,2];
 
         return JSend::success($product);
     }
@@ -63,10 +62,16 @@ class ProductController extends Controller
 
     public function postUpdate(Request $request)
     {
-        Product::find($request->product_id)
-            ->update([
-                'video' => $request->video,
-            ]);
+        $product = Product::find($request->product_id);
+        $product->update([
+            'author_id' => $request->author_id,
+            'video' => $request->video,
+            'price' => $request->price,
+            'type' => $request->type,
+            'video_poster' => $request->video_poster,
+            'recommend' => $request->recommend
+        ]);
+        $product->catagories()->sync($request->type);
         // SampleFile::create([
         //     'product_id' => $request->product_id,
         //     'sample_id' => 'z2.5b25e29ce3d00468089a6b6d',
