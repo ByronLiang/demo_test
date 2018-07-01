@@ -16,6 +16,13 @@ class CatagoryController extends Controller
         return JSend::success($model);
     }
 
+    public function getAllDatas()
+    {
+        $model = Catagory::select('id', 'number', 'name')->get();
+
+        return JSend::success($model);
+    }
+
     public function getShow($id)
     {
         $model = Catagory::findOrFail($id);
@@ -42,6 +49,18 @@ class CatagoryController extends Controller
     public function getDestroy($id)
     {
         Catagory::find($id)->delete();
+
+        return JSend::success();
+    }
+
+    public function postUpdateOrder(Request $request)
+    {
+        $datas = $request->all();
+        foreach ($datas as $value) {
+            Catagory::find($value['id'])->update([
+                'number' => $value['number'],
+            ]);
+        }
 
         return JSend::success();
     }

@@ -31,8 +31,9 @@
                        :total="pagination.total">
         </el-pagination>
     </div>
-    <el-dialog title="自定义排序" :visible.sync="designOrder" width="70%" center>
-        <drap :dataList="catagory"></drap>
+    <el-dialog title="自定义排序" :visible.sync="designOrder" width="60%" center>
+        <drap :dataList="allCatagory" updateUrl="catagory/update-order"
+            ref="drap_sample" @click="handleCancel"></drap>
     </el-dialog>
 </el-card>
 </template>
@@ -45,6 +46,7 @@ export default {
             designOrder: false,
             loading: false,
             catagory: [],
+            allCatagory: [],
             filter: {
                 page: 1
             },
@@ -70,6 +72,7 @@ export default {
     created() {
         this.filter.page = +this.filter.page;
         this.fetchData();
+        this.fetchOrderData();
     },
     // beforeRouteEnter(to, from, next) {
     //     // API.get('catagory/list').then((data) => {
@@ -107,6 +110,18 @@ export default {
                 this.pagination.total = parseInt(res.total);
                 this.pagination.page_size = res.per_page;
             }).finally(() => this.loading = false);
+        },
+        fetchOrderData() {
+            API.get('catagory/all-datas').then((res) => {
+                this.allCatagory = res;
+            });
+        },
+        handleCancel() {
+            // 获取子组件里的数据对象
+            let componentData = this.$refs.drap_sample.listSample;
+            console.log(componentData);
+            // 关闭浮窗
+            this.designOrder = false;
         }
     }
 };

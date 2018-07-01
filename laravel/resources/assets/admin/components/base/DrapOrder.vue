@@ -1,8 +1,8 @@
 <template>
-    <draggable v-model="listSample" :move="getdata" @update="datadragEnd" @sort="handleSort">
+    <draggable v-model="listSample" @update="datadragEnd">
         <!-- <transition-group> -->
-            <div v-for="element in listSample" :key="element.id" :drag-id="element.id" style="cursor:pointer; height:80px;">
-                {{element.name}}
+            <div v-for="element in listSample" style="cursor:pointer; height:80px;">
+                <span>{{ element.number }}</span> <span style="margin-left: 20px;">{{element.name}}</span>
             </div>
 <!--         </transition-group> -->
         <el-button type="primary" @click="add" style="center">Add</el-button>
@@ -19,7 +19,7 @@
             ElButton: Button,
             draggable
         },
-        props: ['dataList'],
+        props: ['dataList', 'updateUrl'],
         data() {
             return {
                 listSample: this.dataList,
@@ -49,10 +49,15 @@
         },
         methods:{
             showIndex() {
+                API.post(this.updateUrl, this.listSample).then((r) => {
+                    console.log('aa');
+                    this.$emit('click');
+                });
                 console.log(this.listSample);
             },
-            getdata (evt) {
-                console.log(evt.draggedContext.element.id)
+            add () {
+                // 对父组件进行触发点击事件，使其执行相应的函数
+                this.$emit('click');
             },
             handleSort(evt) {
                 console.log('onSort.foo:', [evt.item, evt.from]);
@@ -60,43 +65,9 @@
                 console.log(evt.from.getAttribute('drap-id') + ', ' + evt.newIndex);
             },
             datadragEnd (evt) {
-                console.log('拖动前的索引 :' + evt.oldIndex);
-                console.log(evt.item.getAttribute('drag-id'));
-                console.log('拖动后的索引 :' + evt.newIndex);
-                console.log(this.dataList[evt.oldIndex]);
-                console.log(this.dataList[evt.newIndex]);
-                console.log(this.tags)
-            },
-            handleChange() {
-                console.log('times are changing');
-            },
-            inputChanged(value) {
-              this.activeNames = value;
-            },
-            getComponentData() {
-              return {
-                on: {
-                  change: this.handleChange,
-                  input: this.inputChanged
-                },
-                props: {
-                  value: this.activeNames
-                }
-              };
-            },
-            add: function(){
-                this.list2.push({name:'Juan'});
-            },
-            replace: function(){
-                this.list=[{name:'Edgard'}]
-            },
-            clone: function(el){
-                return {
-                    name : el.name + ' cloned'
-                }
-            },
-            log: function (evt){
-                console.log(evt)
+                this.listSample.map((item, index) => {
+                    item.number = index + 1;
+                });
             }
         }
     };
