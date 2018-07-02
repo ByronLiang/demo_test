@@ -57,7 +57,18 @@ class ProductController extends Controller
 
     public function postCreate(Request $request)
     {
-        dd($request->all());
+        $product = Product::create([
+            'name' => $request->name,
+            'author_id' => $request->author_id,
+            'recommend' => $request->recommend,
+            'video' => $request->video,
+            'type' => $request->type,
+            'price' => $request->price,
+            'video_poster' => count($request->video_poster) > 0 ? $request->video_poster : NULL,
+        ]);
+        $product->catagories()->sync($request->type);
+
+        return JSend::success();
     }
 
     public function postUpdate(Request $request)

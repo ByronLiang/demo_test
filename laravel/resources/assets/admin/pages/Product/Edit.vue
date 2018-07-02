@@ -1,6 +1,7 @@
 <template>
     <el-card>
-        <el-form :inline="true" :model="form.search" @submit.prevent="resetPage">
+        <el-form :inline="true" :model="form.search" @submit.prevent="resetPage"
+            border element-loading-text="拼命加载中" stripe v-loading="loading">
             <div class="flex items-center justify-between">
                 <el-form-item label="选择排序">
                     <el-select v-model="form.sort" placeholder="请选择">
@@ -154,7 +155,8 @@ export default {
                 price: '',
                 type: [],
                 author_id: '',
-                recommend: 1,
+                recommend: '1',
+                video: '',
                 video_poster: [],
                 video_node: []
             },
@@ -202,7 +204,8 @@ export default {
     },
     methods: {
         show() {
-            console.log(this.form.sort);
+            this.fetchData();
+            // console.log(this.form.sort);
         },
         fetchTypeData(query) {
             if(query != '') {
@@ -226,85 +229,84 @@ export default {
                 });
             }
         },
+        // 七牛云存储的视频截图
         cutPic() {
             let video = this.$refs.video;
             if (video) {
                 let second = parseInt(video.currentTime);
                 if (second > 0) {
                     let img = this.form.video + '?vframe/jpg/offset/' + second + '/w/200/h/150';
-                    console.log(img);
-                    console.log(this.form.video_poster);
                     this.form.video_poster.push(img);
                 }
             }
         },
         // 只适用于本地视频文件的截图（不宜跨域）
         localFileCutPic() {
-                var scale = 0.9;
-                let output = document.getElementById("video_poster");
-                let outValue = document.getElementsByName('video_poster')[0];
-                let video = document.getElementById("video");
-                //base64图像编码转换成Blob对象文件
-                var dataURItoBlob = function (dataURI) {
-                    const binary = atob(dataURI.split(',')[1]);
-                    const array = [];
-                    for (let i = 0; i < binary.length; i += 1) {
-                        array.push(binary.charCodeAt(i));
-                    }
-                    return new Blob([new Uint8Array(array)], { type: 'image/png' });
+            var scale = 0.9;
+            let output = document.getElementById("video_poster");
+            let outValue = document.getElementsByName('video_poster')[0];
+            let video = document.getElementById("video");
+            //base64图像编码转换成Blob对象文件
+            var dataURItoBlob = function (dataURI) {
+                const binary = atob(dataURI.split(',')[1]);
+                const array = [];
+                for (let i = 0; i < binary.length; i += 1) {
+                    array.push(binary.charCodeAt(i));
                 }
-                var canvas = document.createElement("canvas");
-                canvas.width = video.videoWidth * scale;
-                canvas.height = video.videoHeight * scale;
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                //异步上传截图图片
-                let filename = `${+new Date()}.png`;
-                let formData = new FormData();
-                formData.append('file', dataURItoBlob(canvas.toDataURL('image/png')), filename);
-                formData.append('key', filename);
-                API.post('supplier/normal', formData).then(response => {
-                    console.log(response);
-                    // this.form.video_poster = '/upload/' + filename;
-                    this.form.video_poster.push({picture: '/upload/' + filename});
-                });
+                return new Blob([new Uint8Array(array)], { type: 'image/png' });
+            }
+            var canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth * scale;
+            canvas.height = video.videoHeight * scale;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            //异步上传截图图片
+            let filename = `${+new Date()}.png`;
+            let formData = new FormData();
+            formData.append('file', dataURItoBlob(canvas.toDataURL('image/png')), filename);
+            formData.append('key', filename);
+            API.post('supplier/normal', formData).then(response => {
+                console.log(response);
+                // this.form.video_poster = '/upload/' + filename;
+                this.form.video_poster.push({picture: '/upload/' + filename});
+            });
 
 
-                // 未上传图片获取图片预览
-                // var img = new Image();
-                // img.setAttribute("crossOrigin",'Anonymous');
-                // img.src = window['URL']['createObjectURL'](dataURItoBlob(canvas.toDataURL("image/png")));
-                // img.width = 400;
-                // img.height = 300;
-                // if (output.childNodes.length > 0) {
-                //     output.removeChild(output.childNodes[0]);
-                //     outValue.value = '';
+            // 未上传图片获取图片预览
+            // var img = new Image();
+            // img.setAttribute("crossOrigin",'Anonymous');
+            // img.src = window['URL']['createObjectURL'](dataURItoBlob(canvas.toDataURL("image/png")));
+            // img.width = 400;
+            // img.height = 300;
+            // if (output.childNodes.length > 0) {
+            //     output.removeChild(output.childNodes[0]);
+            //     outValue.value = '';
 
-                // }
-                // output.appendChild(img);
-                // outValue.value = '/upload/' + filename;
-            },
-            removeImage(index) {
-                this.form.video_poster.splice(index, 1);
-            },
-            submit() {
-                if (!this.$route.params.id) {
-                    API.post('product/create', this.form).then((res) => {
-                        Element.$confirm('添加成功', '提示', {
-                            confirmButtonText: '继续发布',
-                            cancelButtonText: '返回列表',
-                            type: 'success'
-                        }).then(() => {
-                            history.go(0);
-                        }).catch(() => {
-                            this.$router.go(-1);
-                        });
-                    })
-                } else {
-                    this.form.product_id = this.$route.params.id;
-                    API.post('product/update', this.form).then((res) => {
+            // }
+            // output.appendChild(img);
+            // outValue.value = '/upload/' + filename;
+        },
+        removeImage(index) {
+            this.form.video_poster.splice(index, 1);
+        },
+        submit() {
+            if (!this.$route.params.id) {
+                API.post('product/create', this.form).then((res) => {
+                    Element.$confirm('添加成功', '提示', {
+                        confirmButtonText: '继续发布',
+                        cancelButtonText: '返回列表',
+                        type: 'success'
+                    }).then(() => {
+                        history.go(0);
+                    }).catch(() => {
                         this.$router.go(-1);
-                    })
-                }
+                    });
+                })
+            } else {
+                this.form.product_id = this.$route.params.id;
+                API.post('product/update', this.form).then((res) => {
+                    this.$router.go(-1);
+                })
+            }
         },
         handlePlay() {
             let v = this.$refs.video;
@@ -320,25 +322,38 @@ export default {
         handleSeeked() {
             let video = this.$refs.video;
             console.log(video.currentTime);
+        },
+        fetchData() {
+            if (! this.$route.params.id) return;
+            this.loading = true;
+            API.get('product/edit/' + this.$route.params.id).then((res) => {
+                for (const i of Object.keys(this.form)) {
+                    // 可以维持原表单的数据结构，避免被获取的数据进行覆盖
+                    if (res[i] || res[i] === 0) this.form[i] = res[i];
+                }
+            }).finally(() => this.loading = false);
         }
     },
-    beforeRouteEnter(to, from, next) {
-        if (to.params.id) {
-            API.get('product/edit/' + to.params.id).then((res) => {
-                next(vm => {
-                    vm.form = res
-                    if (! res.video_poster) {
-                        vm.form.video_poster = [];
-                    }
-                    if (! res.video_node) {
-                        vm.form.video_node = [];
-                    }
-                });
-            })
-            return false;
-        }
-        next();
-    }
+    created() {
+        this.fetchData();
+    },
+    // beforeRouteEnter(to, from, next) {
+    //     if (to.params.id) {
+    //         API.get('product/edit/' + to.params.id).then((res) => {
+    //             next(vm => {
+    //                 vm.form = res
+    //                 if (! res.video_poster) {
+    //                     vm.form.video_poster = [];
+    //                 }
+    //                 if (! res.video_node) {
+    //                     vm.form.video_node = [];
+    //                 }
+    //             });
+    //         })
+    //         return false;
+    //     }
+    //     next();
+    // }
 }
 </script>
 
