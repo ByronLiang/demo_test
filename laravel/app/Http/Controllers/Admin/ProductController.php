@@ -90,4 +90,12 @@ class ProductController extends Controller
         // ]);
         return JSend::success();
     }
+
+    public function getShow($id)
+    {
+        $data = Product::with('catagories', 'author')
+            ->findorFail($id);
+
+        return JSend::success($data);
+    }
 }

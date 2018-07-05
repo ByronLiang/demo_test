@@ -63,7 +63,7 @@ module.exports = {
                     children: [
                         {
                             name: 'Product.List',
-                            path: 'list',
+                            path: '/',
                             component: lazyLoading('Product/List'),
                             meta: {
                                 title: '产品列表',
@@ -75,6 +75,13 @@ module.exports = {
                             component: lazyLoading('Product/Edit'),
                             meta: {
                                 title: '编辑产品',
+                            },
+                        }, {
+                            name: 'Product.show',
+                            path: 'show/:id',
+                            component: lazyLoading('Product/Show'),
+                            meta: {
+                                title: '产品详情',
                             },
                         }
                     ],

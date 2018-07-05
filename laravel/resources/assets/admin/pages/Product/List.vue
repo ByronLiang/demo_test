@@ -26,12 +26,14 @@
         <el-table-column prop="author.name" label="作者"></el-table-column>
         <el-table-column prop="price" label="价格"></el-table-column>
         <el-table-column label="操作">
-            <template slot-scope="scope">
-                <router-link :to="{name: 'Product.edit', params: { id: scope.row.id }}">
+            <template slot-scope="{$index, row}">
+                <router-link :to="`show/${row.id}`" append>
+                    <el-button size="mini">详情</el-button></router-link>
+                <router-link :to="{name: 'Product.edit', params: { id: row.id }}">
                 <el-button size="mini">编辑</el-button>
                 </router-link>
                 <!-- <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
-                <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                <el-button size="mini" type="danger" @click="handleDelete($index, row)">删除</el-button>
             </template>
         </el-table-column>
     </el-table>
