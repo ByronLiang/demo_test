@@ -46,8 +46,10 @@ class AuthorController extends Controller
         return JSend::success();
     }
 
-    public function getDestory()
+    public function getDestroy($id)
     {
+        Author::find($id)->delete();
+
         return JSend::success();
     }
 }
