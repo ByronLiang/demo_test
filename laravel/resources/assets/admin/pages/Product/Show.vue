@@ -1,18 +1,18 @@
 <template>
     <el-card>
-        <el-form :inline="true" :model="form.search" @submit.prevent="resetPage"
+        <el-form :inline="true" :model="form" @submit.prevent="resetPage"
             border element-loading-text="拼命加载中" stripe v-loading="loading">
             <div class="form-item-box">
                 <h3>基本信息</h3>
                 <div class="form-box mt-4">
-                    <el-form-item label="名称:">
+                    <el-form-item label="名称:" prop="name">
                         <span>{{ form.name }}</span>
                     </el-form-item>
                     <el-form-item label="作者:">
-                        <span>{{ author['name'] }}</span>
+                        <span>{{ author.name }}</span>
                     </el-form-item>
                     <el-form-item label="类型:">
-                        <span v-for="catagory in catagories">{{ catagory.name }} </span>
+                        <span v-for="catagory in form.catagories">{{ catagory.name }} </span>
                     </el-form-item>
                 </div>
                 <div class="form-box mt-4">
@@ -63,18 +63,8 @@ export default {
             loading: false,
             products: [],
             form: [],
-            author: '',
+            author: [],
             catagories: [],
-            options: [{
-              value: '1',
-              label: '销量'
-            }, {
-              value: '0',
-              label: '创建时间'
-            }],
-            options4: [],
-            options5: [],
-            author_options: [],
             video_poster: []
         }
     },
@@ -106,96 +96,6 @@ export default {
         }
     },
     methods: {
-        show() {
-            this.fetchData();
-            // console.log(this.form.sort);
-        },
-        fetchTypeData(query) {
-            if(query != '') {
-                API.get('product/search', {params: {keyword: query, type: 'catagory'}}).then((data) => {
-                    this.options4 = data;
-                });
-            } else {
-                API.get('product/catagory').then((data) => {
-                    this.options4 = data;
-                });
-            }
-        },
-        fetchAuthorData(query) {
-            if(query != '') {
-                API.get('product/search', {params: {keyword: query, type: 'author'}}).then((data) => {
-                    this.author_options = data;
-                });
-            } else {
-                API.get('product/author').then((data) => {
-                    this.author_options = data;
-                });
-            }
-        },
-        // 七牛云存储的视频截图
-        cutPic() {
-            let video = this.$refs.video;
-            if (video) {
-                let second = parseInt(video.currentTime);
-                if (second > 0) {
-                    let img = this.form.video + '?vframe/jpg/offset/' + second + '/w/200/h/150';
-                    this.form.video_poster.push(img);
-                }
-            }
-        },
-        // 只适用于本地视频文件的截图（不宜跨域）
-        localFileCutPic() {
-            var scale = 0.9;
-            let output = document.getElementById("video_poster");
-            let outValue = document.getElementsByName('video_poster')[0];
-            let video = document.getElementById("video");
-            //base64图像编码转换成Blob对象文件
-            var dataURItoBlob = function (dataURI) {
-                const binary = atob(dataURI.split(',')[1]);
-                const array = [];
-                for (let i = 0; i < binary.length; i += 1) {
-                    array.push(binary.charCodeAt(i));
-                }
-                return new Blob([new Uint8Array(array)], { type: 'image/png' });
-            }
-            var canvas = document.createElement("canvas");
-            canvas.width = video.videoWidth * scale;
-            canvas.height = video.videoHeight * scale;
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            //异步上传截图图片
-            let filename = `${+new Date()}.png`;
-            let formData = new FormData();
-            formData.append('file', dataURItoBlob(canvas.toDataURL('image/png')), filename);
-            formData.append('key', filename);
-            API.post('supplier/normal', formData).then(response => {
-                console.log(response);
-                // this.form.video_poster = '/upload/' + filename;
-                this.form.video_poster.push({picture: '/upload/' + filename});
-            });
-        },
-        removeImage(index) {
-            this.form.video_poster.splice(index, 1);
-        },
-        submit() {
-            if (!this.$route.params.id) {
-                API.post('product/create', this.form).then((res) => {
-                    Element.$confirm('添加成功', '提示', {
-                        confirmButtonText: '继续发布',
-                        cancelButtonText: '返回列表',
-                        type: 'success'
-                    }).then(() => {
-                        history.go(0);
-                    }).catch(() => {
-                        this.$router.go(-1);
-                    });
-                })
-            } else {
-                this.form.product_id = this.$route.params.id;
-                API.post('product/update', this.form).then((res) => {
-                    this.$router.go(-1);
-                })
-            }
-        },
         handlePlay() {
             let v = this.$refs.video;
             console.log(v.duration);

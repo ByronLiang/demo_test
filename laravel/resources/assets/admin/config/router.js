@@ -80,9 +80,9 @@ module.exports = {
                             name: 'Product.show',
                             path: 'show/:id',
                             component: lazyLoading('Product/Show'),
-                            meta: {
-                                title: '产品详情',
-                            },
+                            // meta: {
+                            //     title: '产品详情',
+                            // },
                         }
                     ],
                 },
