@@ -20,7 +20,7 @@ if (process.env.NODE_ENV !== 'production') {
  * variable | placeholder(type)
  */
 Vue.filter('placeholder', require('../filters/placeholder').default);
-
+Vue.filter('recommend', require('../filters/recommend').default);
 /* ============
  * Vuex Store
  * ============

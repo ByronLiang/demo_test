@@ -2,10 +2,20 @@
     <el-card>
         <el-form :inline="true" :model="form.search" @submit.prevent="resetPage">
             <div class="flex items-center justify-between">
-                <el-form-item label="选择排序">
-                    <el-select v-model="form.sort" placeholder="请选择">
+                <el-form-item label="是否推荐">
+                    <el-select v-model="form.isRecommend" placeholder="请选择">
                         <el-option
                           v-for="item in options"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="类型">
+                    <el-select v-model="form.catagory" placeholder="请选择">
+                        <el-option
+                          v-for="item in catagoryOptions"
                           :key="item.value"
                           :label="item.label"
                           :value="item.value">
@@ -25,6 +35,16 @@
         <el-table-column prop="name" label="名称"></el-table-column>
         <el-table-column prop="author.name" label="作者"></el-table-column>
         <el-table-column prop="price" label="价格"></el-table-column>
+        <el-table-column label="类型">
+            <template slot-scope="{$index, row}">
+                <span v-for="catagory in row.catagories">{{ catagory.name }} </span>
+            </template>
+        </el-table-column>
+        <el-table-column label="是否推荐">
+            <template slot-scope="{$index, row}">
+                {{ row.recommend | recommend }}
+            </template>
+        </el-table-column>
         <el-table-column label="操作">
             <template slot-scope="{$index, row}">
                 <router-link :to="`show/${row.id}`" append>
@@ -50,18 +70,20 @@ export default {
             form: {
                 date: '',
                 page: 1,
-                sort: '',
+                isRecommend: '',
+                catagory: ''
             },
             pagination: {
                 total: 0,
                 page_size: 0,
             },
+            catagoryOptions: [],
             options: [{
               value: '1',
-              label: '销量'
+              label: '推荐'
             }, {
               value: '0',
-              label: '创建时间'
+              label: '不推荐'
             }],
         }
     },
@@ -83,9 +105,11 @@ export default {
     },
     methods: {
         fetchData() {
+            this.loading = true;
             API.get('product/list', {params: this.form}).then((res) => {
-                this.products = res.data;
-            })
+                this.products = res.data.data;
+                this.catagoryOptions = res.catagories;
+            }).finally(() => this.loading = false);
         }
     }
 }

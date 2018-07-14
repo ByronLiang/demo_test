@@ -15,9 +15,10 @@ class ProductController extends Controller
 {
     public function getList()
     {
-        $data = Product::with('author')->paginate();
+        $data = Product::with('author', 'catagories')->paginate();
+        $catagories = $this->getCatagoryCache();
 
-        return JSend::success($data);
+        return JSend::success(compact('data', 'catagories'));
     }
 
     public function getEdit($productId)

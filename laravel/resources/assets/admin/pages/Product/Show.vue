@@ -9,7 +9,7 @@
                         <span>{{ form.name }}</span>
                     </el-form-item>
                     <el-form-item label="作者:">
-                        <span>{{ author.name }}</span>
+                        <span>{{ form.author.name }}</span>
                     </el-form-item>
                     <el-form-item label="类型:">
                         <span v-for="catagory in form.catagories">{{ catagory.name }} </span>
@@ -20,7 +20,7 @@
                         <span v-text="form.price"></span>
                     </el-form-item>
                     <el-form-item label="是否推荐" prop="recommend">
-                        {{  form.recommend | isRecommend }}
+                        {{  form.recommend | recommend }}
                     </el-form-item>
                 </div>
             </div>
@@ -35,7 +35,7 @@
                         v-if="form.video">No support</video>
                 </el-form-item>
                 </div>
-                <div>
+                <div style="margin-top: 10px;">
                     <el-button type="normal" @click="handleHightLight(29)" v-if="form.video">精彩点一</el-button>
                     <el-button type="normal" @click="handleHightLight(39)" v-if="form.video">精彩点二</el-button>
                     <el-button type="normal" @click="handleHightLight(69)" v-if="form.video">精彩点三</el-button>
@@ -62,10 +62,16 @@ export default {
             highTime: '',
             loading: false,
             products: [],
-            form: [],
-            author: [],
-            catagories: [],
-            video_poster: []
+            form: {
+                name: '',
+                price: '',
+                catagories: [],
+                author: [],
+                recommend: '1',
+                video: '',
+                video_poster: [],
+                video_node: []
+            }
         }
     },
     components: {
@@ -84,16 +90,6 @@ export default {
     mounted() {
     },
     watch: {
-    },
-    filters: {
-        isRecommend: function(value) {
-            if (! value) {
-                return '';
-            } else {
-                let status = ['不推荐', '推荐'];
-                return status[value];
-            }
-        }
     },
     methods: {
         handlePlay() {
@@ -114,9 +110,10 @@ export default {
         fetchData() {
             this.loading = true;
             API.get('product/show/' + this.$route.params.id).then((res) => {
-                this.form = res;
-                this.author = res.author;
-                this.catagories = res.catagories;
+                for (const i of Object.keys(this.form)) {
+                    // 可以维持原表单的数据结构，避免被获取的数据进行覆盖
+                    if (res[i] || res[i] === 0) this.form[i] = res[i];
+                }
             }).finally(() => this.loading = false);
         }
     },
