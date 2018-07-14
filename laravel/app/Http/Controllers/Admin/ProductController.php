@@ -13,9 +13,22 @@ use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
-    public function getList()
+    public function getList(Request $request, Product $product)
     {
-        $data = Product::with('author', 'catagories')->paginate();
+        // $data = Product::when(($request->isRecommend || $request->isRecommend == '0'), function ($q) use ($request) {
+        //     return $q->where('recommend', $request->isRecommend);
+        // })
+        // ->when($request->catagory, function ($q) use ($request) {
+        //     return $q->whereHas('catagories', function ($q1) use ($request) {
+        //         $q1->where('catagory.id', $request->catagory);
+        //     });
+        // })
+        // ->with('author', 'catagories')
+        // ->paginate();
+        // 对象获取
+        $product = $product->filter($request);
+        $data = $product->with('author', 'catagories')
+            ->paginate();
         $catagories = $this->getCatagoryCache();
 
         return JSend::success(compact('data', 'catagories'));

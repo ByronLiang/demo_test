@@ -23,4 +23,17 @@ class Product extends Model
     {
         return $this->belongsToMany(Catagory::class, 'product_catagory');
     }
+
+    // 数据筛选
+    public function filter($request)
+    {
+        return $this->when(($request->isRecommend || $request->isRecommend == '0'), function ($q) use ($request) {
+            return $q->where('recommend', $request->isRecommend);
+        })
+        ->when($request->catagory, function ($q) use ($request) {
+            return $q->whereHas('catagories', function ($q1) use ($request) {
+                $q1->where('catagory.id', $request->catagory);
+            });
+        });
+    }
 }

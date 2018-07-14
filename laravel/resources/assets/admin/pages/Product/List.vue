@@ -27,36 +27,47 @@
                         placeholder="选择日期">
                     </el-date-picker>
                 </el-form-item>
+                <el-form-item>
+                    <el-button size="mini" @click="clearSearch">清空筛选</el-button>
+                </el-form-item>
             </div>
         </el-form>
         <el-table :data="products" border element-loading-text="拼命加载中" stripe v-loading="loading"
         style="width: 100%">
-        <el-table-column prop="id" label="编号" width="50"></el-table-column>
-        <el-table-column prop="name" label="名称"></el-table-column>
-        <el-table-column prop="author.name" label="作者"></el-table-column>
-        <el-table-column prop="price" label="价格"></el-table-column>
-        <el-table-column label="类型">
-            <template slot-scope="{$index, row}">
-                <span v-for="catagory in row.catagories">{{ catagory.name }} </span>
-            </template>
-        </el-table-column>
-        <el-table-column label="是否推荐">
-            <template slot-scope="{$index, row}">
-                {{ row.recommend | recommend }}
-            </template>
-        </el-table-column>
-        <el-table-column label="操作">
-            <template slot-scope="{$index, row}">
-                <router-link :to="`show/${row.id}`" append>
-                    <el-button size="mini">详情</el-button></router-link>
-                <router-link :to="{name: 'Product.edit', params: { id: row.id }}">
-                <el-button size="mini">编辑</el-button>
-                </router-link>
-                <!-- <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
-                <el-button size="mini" type="danger" @click="handleDelete($index, row)">删除</el-button>
-            </template>
-        </el-table-column>
-    </el-table>
+            <el-table-column prop="id" label="编号" width="50"></el-table-column>
+            <el-table-column prop="name" label="名称"></el-table-column>
+            <el-table-column prop="author.name" label="作者"></el-table-column>
+            <el-table-column prop="price" label="价格"></el-table-column>
+            <el-table-column label="类型">
+                <template slot-scope="{$index, row}">
+                    <span v-for="catagory in row.catagories">{{ catagory.name }} </span>
+                </template>
+            </el-table-column>
+            <el-table-column label="是否推荐">
+                <template slot-scope="{$index, row}">
+                    {{ row.recommend | recommend }}
+                </template>
+            </el-table-column>
+            <el-table-column label="操作">
+                <template slot-scope="{$index, row}">
+                    <router-link :to="`show/${row.id}`" append>
+                        <el-button size="mini">详情</el-button></router-link>
+                    <router-link :to="{name: 'Product.edit', params: { id: row.id }}">
+                    <el-button size="mini">编辑</el-button>
+                    </router-link>
+                    <!-- <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
+                    <el-button size="mini" type="danger" @click="handleDelete($index, row)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <div class="text-center pt-2" v-show="!loading && pagination.total > 0">
+            <el-pagination  layout="total, prev, pager, next"
+               @current-change="fetchData"
+               :page-size="pagination.page_size"
+               :current-page="form.page"
+               :total="pagination.total">
+            </el-pagination>
+        </div>
     </el-card>
 </template>
 
@@ -79,10 +90,10 @@ export default {
             },
             catagoryOptions: [],
             options: [{
-              value: '1',
+              value: 1,
               label: '推荐'
             }, {
-              value: '0',
+              value: 0,
               label: '不推荐'
             }],
         }
@@ -98,18 +109,38 @@ export default {
         ElFormItem: FormItem,
         ElDatePicker: DatePicker,
     },
+    watch: {
+        'form.isRecommend': function(val) {
+            console.log(this.form);
+            this.fetchData();
+        },
+        'form.catagory': function(val) {
+            this.fetchData();
+        }
+    },
     created() {
         this.form.page = +this.form.page;
         console.log(this.form.page);
         this.fetchData();
     },
     methods: {
-        fetchData() {
+        fetchData(page = null) {
+            if (page) {
+                this.form.page = page;
+            }
             this.loading = true;
             API.get('product/list', {params: this.form}).then((res) => {
                 this.products = res.data.data;
+                this.pagination.total = parseInt(res.data.total);
+                this.pagination.page_size = res.data.per_page;
                 this.catagoryOptions = res.catagories;
             }).finally(() => this.loading = false);
+        },
+        clearSearch() {
+            this.form.isRecommend = '';
+            this.form.catagory = '';
+            this.page = 1;
+            this.fetchData();
         }
     }
 }
