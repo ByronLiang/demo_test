@@ -7,16 +7,22 @@ use App\Http\Controllers\Controller;
 use QrCode;
 use Config;
 use App\Services\WechatService;
+use App\Models\User;
 
 class WechatController extends Controller
 {
     public function getWechatCode()
     {
-        $callback = urlencode('http://16e01e61.ngrok.io/web/wechat/login');
-        $url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx287a861a2bc42046&redirect_uri='. $callback . '&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
+        $url = action('Web\WechatController@getWechatLogin');
         $code = QrCode::size(200)->generate($url);
 
         return view('web.wechat.wechat_qrcode', compact('code'));
+
+        // $callback = urlencode('http://16e01e61.ngrok.io/web/wechat/login');
+        // $url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='. env('WECHAT_APP_ID').'&redirect_uri='. $callback . '&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
+        // $code = QrCode::size(200)->generate($url);
+
+        // return view('web.wechat.wechat_qrcode', compact('code'));
     }
 
     public function getLogin()
@@ -38,10 +44,22 @@ class WechatController extends Controller
     public function getOauth()
     {
         $wechat = new WechatService();
-        $user = $wechat->oauthUser();
-        echo $user->getId() . '<br>';  // 对应微信的 OPENID
-        echo $user->getNickname() . '<br>'; // 对应微信的 nickname
-        echo $user->getName() . '<br>'; // 对应微信的 nickname
-        echo $user->getAvatar(); // 头像网址
+        $userInfo = $wechat->oauthUser();
+        $user = User::where('wechat_number', $userInfo->getId())
+            ->first();
+        if (! $user) {
+            $user = User::create([
+                'avatar' => $userInfo->getAvatar(),
+                'name' => $userInfo->getName(),
+                'wechat_number' => $userInfo->getId(),
+                'api_token' => str_random(64),
+            ]);
+        }
+        if ($user) {
+            return view('web.wechat.home', compact('user'));
+            // return redirect()->action('Web\HomeController@getIndex');
+        } else {
+            echo "Error";
+        }
     }
 }

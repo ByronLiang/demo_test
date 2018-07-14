@@ -51,6 +51,12 @@ class WechatService
         return $this->app->oauth->redirect();
     }
 
+    public function oauthInfoRedirect()
+    {
+        return $this->app->oauth->scopes(['snsapi_userinfo'])
+            ->redirect();
+    }
+
     public function oauthUser()
     {
         return $this->app->oauth->user();
