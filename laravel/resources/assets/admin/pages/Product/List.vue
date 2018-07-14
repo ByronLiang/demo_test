@@ -110,17 +110,17 @@ export default {
         ElDatePicker: DatePicker,
     },
     watch: {
-        'form.isRecommend': function(val) {
-            console.log(this.form);
-            this.fetchData();
+        'form.isRecommend'(val, oldVal) {
+            console.log(val);
+            console.log(oldVal);
+            this.fetchData(1);
         },
-        'form.catagory': function(val) {
-            this.fetchData();
+        'form.catagory'(val, oldVal) {
+            this.fetchData(1);
         }
     },
     created() {
         this.form.page = +this.form.page;
-        console.log(this.form.page);
         this.fetchData();
     },
     methods: {
@@ -139,8 +139,7 @@ export default {
         clearSearch() {
             this.form.isRecommend = '';
             this.form.catagory = '';
-            this.page = 1;
-            this.fetchData();
+            this.fetchData(1);
         }
     }
 }
