@@ -8,12 +8,17 @@ use QrCode;
 use Config;
 use App\Services\WechatService;
 use App\Models\User;
+use Overtrue\Socialite\SocialiteManager;
+use Overtrue\Socialite\AccessToken;
 
 class WechatController extends Controller
 {
     public function getWechatCode()
     {
+        // EasyWechat授权登录
         $url = action('Web\WechatController@getWechatLogin');
+        // Socialit第三方管理登录
+        // $url = action('Web\WechatController@getLogin');
         $code = QrCode::size(200)->generate($url);
 
         return view('web.wechat.wechat_qrcode', compact('code'));
@@ -25,15 +30,43 @@ class WechatController extends Controller
         // return view('web.wechat.wechat_qrcode', compact('code'));
     }
 
+    // Socialit第三方登录组件
     public function getLogin()
     {
-        if (isset($_GET['code'])) {
-            echo $_GET['code'] . 'state=' . $_GET['state'];
-        } else{
-            echo "NO CODE";
-        }
+        $cfg = Config::get('services.wechat');
+        $config = [
+            'wechat' => [
+                'client_id' => $cfg['appid'],
+                'client_secret' => $cfg['appsecret'],
+                'redirect' => action('Web\WechatController@getSocialCallback'),
+            ],
+        ];
+        $socialite = new SocialiteManager($config);
+
+        return $socialite->driver('wechat')->scopes(['snsapi_userinfo'])->redirect();
     }
 
+    // Socialit第三方登录回调方法
+    public function getSocialCallback()
+    {
+        $cfg = Config::get('services.wechat');
+        $config = [
+            'wechat' => [
+                'client_id' => $cfg['appid'],
+                'client_secret' => $cfg['appsecret'],
+                'redirect' => action('Web\WechatController@getSocialCallback'),
+            ],
+        ];
+        $socialite = new SocialiteManager($config);
+        $user = $socialite->driver('wechat')->user();
+        // 用户基本信息
+        $basic = $user->getOriginal();
+        // token access_token 信息
+        $tokenInfo = $user->token;
+        dd($basic, $tokenInfo);
+    }
+
+    // EasyWeChat授权登录
     public function getWechatLogin()
     {
         $wechat = new WechatService();
