@@ -159,6 +159,7 @@ return [
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         Ganguo\JSend\JSendServiceProvider::class,
         AetherUpload\AetherUploadServiceProvider::class,
+        Jenssegers\Mongodb\MongodbServiceProvider::class,
 //        Overtrue\LaravelFilesystem\Qiniu\QiniuStorageServiceProvider::class,
     ],
 
@@ -207,6 +208,7 @@ return [
 
         'JSend' => Ganguo\JSend\Facades\JSend::class,
 
-        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+        'Moloquent' => Jenssegers\Mongodb\Eloquent\Model::class,
     ],
 ];

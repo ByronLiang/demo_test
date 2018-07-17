@@ -75,6 +75,15 @@ return [
             'prefix' => '',
             'schema' => 'public',
         ],
+
+        'mongodb' => [
+            'driver'   => 'mongodb',
+            'host'     => 'localhost',
+            'port'     => 27017,
+            'database' => env('MONGODB_DATABASE'),
+            'username' => '',
+            'password' => '',
+        ],
     ],
 
     /*

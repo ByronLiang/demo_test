@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\MongoModels\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\QiniuService;
@@ -30,5 +31,11 @@ class TestController extends Controller
         } else{
             echo "NO CODE";
         }
+    }
+
+    public function getMongoData()
+    {
+        $res = User::whereNotIn('name', ['byron'])->get();
+        dd($res);
     }
 }
