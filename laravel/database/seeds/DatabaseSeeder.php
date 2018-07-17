@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
     {
         if (config('app.env') == 'test') {
             $this->call(TestSeed::class);
+            $this->call(AdminTableSeeder::class);
+            $this->call(AuthorSeed::class);
         } else {
             $this->call(AdminTableSeeder::class);
         }
