@@ -29,7 +29,7 @@ class ProductController extends Controller
         $product = $product->filter($request);
         $data = $product->with('author', 'catagories')
             ->paginate();
-        $catagories = $this->getCatagoryCache();
+        $catagories = Catagory::getCachedAll();
 
         return JSend::success(compact('data', 'catagories'));
     }
@@ -41,45 +41,17 @@ class ProductController extends Controller
         return JSend::success($product);
     }
 
-    private function getCatagoryCache()
-    {
-        if (Cache::has('catagory')) {
-            $value = Cache::get('catagory');
-        } else {
-            $value = Cache::rememberForever('catagory', function() {
-                return Catagory::select('id as value', 'name as label')->get();
-            });
-        }
-
-        return $value;
-    }
-
     public function getCatagory()
     {
-        $catagory = $this->getCatagoryCache();
-        // $catagory = Catagory::select('id as value', 'name as label')->get();
+        $catagory = Catagory::getCachedAll();
 
         return JSend::success($catagory);
-    }
-
-    private function getAuthorCache()
-    {
-        if (Cache::has('author')) {
-            $value = Cache::get('author');
-        } else {
-            $value = Cache::rememberForever('author', function() {
-                return Author::select('id as value', 'name as label')->get();
-            });
-        }
-
-        return $value;
     }
 
     public function getAuthor()
     {
         // 缓存加载作者选项
-        $authors = $this->getAuthorCache();
-        // $authors = Author::select('id as value', 'name as label')->get();
+        $authors = Author::getCachedAll();
 
         return JSend::success($authors);
     }

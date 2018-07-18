@@ -20,28 +20,11 @@ class Author extends Model
         parent::boot();
         // 监听模型的更新与添加事件
         static::saved(function ($author) {
-            Cache::forget('author');
-            $value = Cache::rememberForever('author', function() {
-                return self::select('id as value', 'name as label')->get();
-            });
-            if ($value) {
-                Log::info('update cache success');
-            } else {
-                Log::error('update cache error');
-            }
+            self::updateCachedAll();
         });
         // 删除数据：deleting，deleted 事件监听
         static::deleted(function($author) {
-            if(Cache::has('author')) {
-                Cache::forget('author');
-                $value = Cache::rememberForever('author', function() {
-                    return self::select('id as value', 'name as label')->get();
-                });
-            } else {
-                $value = Cache::rememberForever('author', function() {
-                    return self::select('id as value', 'name as label')->get();
-                });
-            }
+            self::updateCachedAll();
         });
     }
 }
