@@ -159,7 +159,7 @@ return [
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         Ganguo\JSend\JSendServiceProvider::class,
         AetherUpload\AetherUploadServiceProvider::class,
-        // Jenssegers\Mongodb\MongodbServiceProvider::class,
+        Jenssegers\Mongodb\MongodbServiceProvider::class,
 //        Overtrue\LaravelFilesystem\Qiniu\QiniuStorageServiceProvider::class,
     ],
 
