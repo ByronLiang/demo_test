@@ -11,6 +11,9 @@
                 </el-form-item>
                 <el-form-item>
                     <el-switch v-model="form.remember" active-text="下次免登录"></el-switch>
+                    <router-link class="float-right" to="/register">
+                        <el-button type="text">注册管理员</el-button>
+                    </router-link>
                 </el-form-item>
                 <el-form-item class="center">
                     <el-button type="primary" @click="login" :loading="isBtnLoading">{{btnText}}</el-button>

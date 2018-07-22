@@ -13,4 +13,11 @@ class AuthController extends Controller
         }
         return \JSend::error('账号或者密码错误');
     }
+
+    public function getCaptcha()
+    {
+        $captcha = rand(1111, 9999);
+
+        return \JSend::success(compact('captcha'));
+    }
 }

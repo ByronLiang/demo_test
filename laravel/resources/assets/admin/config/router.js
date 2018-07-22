@@ -12,6 +12,9 @@ module.exports = {
             path: '/login',
             component: lazyLoading('Login'),
         }, {
+            path: '/register',
+            component: lazyLoading('Register'),
+        },{
             path: '/',
             component: require('../components/layout/Container.vue'),
             redirect: {
