@@ -43,6 +43,9 @@ Route::group(['prefix' => 'web',
     'namespace' => 'Web',
     'middleware' => 'auth.driver:web'
 ], function () {
+    Route::group(['prefix' => 'auth', 'namespace' => 'Auth'], function () {
+        Route::controller('auth', 'AuthController');
+    });
     Route::controller('test', 'TestController');
     Route::controller('wechat', 'WechatController');
     Route::controller('home', 'HomeController');

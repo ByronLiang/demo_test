@@ -15,11 +15,13 @@
     <!--link rel="stylesheet" href="//at.alicdn.com/t/font_iy91m8e0r2lz0k9.css"-->
     <!-- <link rel="stylesheet" href="{{ mix('/static/css/web.css') }}"> -->
 </head>
-<body>
+<body style="padding-top: 40px; padding-bottom: 40px; background-color: #eee;">
+    @yield('head')
     <div>
         @yield('body')
     </div>
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <!-- <script src="{{ mix('/static/js/web.js') }}"></script> -->
 </body>
 </html>
