@@ -92,14 +92,14 @@
                         <el-button size="small" type="primary" v-else>Upload Video File</el-button>
                         </img-upload>
                     </el-form-item>
-                <div>
-                    <el-button type="normal" @click="cutPic" v-if="form.video">手动截图</el-button>
-                </div>
-                <div>
-                    <el-button type="normal" @click="handleHightLight(29)" v-if="form.video">精彩点一</el-button>
-                    <el-button type="normal" @click="handleHightLight(39)" v-if="form.video">精彩点二</el-button>
-                    <el-button type="normal" @click="handleHightLight(69)" v-if="form.video">精彩点三</el-button>
-                </div>
+                    <div>
+                        <el-button type="normal" @click="cutPic" v-if="form.video">手动截图</el-button>
+                    </div>
+                    <div>
+                        <el-button type="normal" @click="handleHightLight(29)" v-if="form.video">精彩点一</el-button>
+                        <el-button type="normal" @click="handleHightLight(39)" v-if="form.video">精彩点二</el-button>
+                        <el-button type="normal" @click="handleHightLight(69)" v-if="form.video">精彩点三</el-button>
+                    </div>
                     <el-form-item label="视频截图">
                             <!-- <img :src="form.video_poster" class="image" v-if="form.video_poster"
                                 style="width: 400px; height: 300px;"> -->
@@ -119,6 +119,18 @@
                             <!-- <input type="hidden" name="video_poster" :value="form.video_poster"> -->
                     </el-form-item>
                 </div>
+                <el-form-item label="学习资源包">
+
+                    <el-upload
+                        action="/admin/upload/upload-process"
+                        :on-success="handleSuccess"
+                        :limit="1"
+                        :file-list="fileList">
+                      <el-button size="small" type="primary">点击上传</el-button>
+                      <div slot="tip" class="el-upload__tip">只能上传zip/rar文件，且不超过500kb</div>
+                    </el-upload>
+                    <el-button size="small" type="normal" @click="checkZip">解压压缩包</el-button>
+                </el-form-item>
             </div>
             <div class="form-item-box" v-if="form.video">
                 <div style="width: 100%; height: 400px;">
@@ -140,7 +152,7 @@
 </template>
 
 <script>
-import {Table, TableColumn, Card, Pagination, Form, FormItem, Select, Option, DatePicker, Button, Input} from 'element-ui';
+import {Table, TableColumn, Card, Pagination, Form, FormItem, Select, Option, DatePicker, Button, Input, Upload} from 'element-ui';
 import SampleImgUpload from '../../components/base/ImgUpload.vue';
 import ImgUpload from '../../components/base/qiniuUpload.vue';
 import VideoPlay from '../../components/base/VideoPlayer.vue';
@@ -170,7 +182,8 @@ export default {
             options4: [],
             options5: [],
             author_options: [],
-            video_poster: []
+            video_poster: [],
+            fileList:[],
         }
     },
     components: {
@@ -185,6 +198,7 @@ export default {
         ElDatePicker: DatePicker,
         ElButton: Button,
         ElInput: Input,
+        ElUpload: Upload,
         ImgUpload,
         VideoPlay
     },
@@ -332,7 +346,16 @@ export default {
                     if (res[i] || res[i] === 0) this.form[i] = res[i];
                 }
             }).finally(() => this.loading = false);
-        }
+        },
+        handleSuccess(r, file, fileList) {
+            console.log(r);
+            console.log(file);
+        },
+        checkZip() {
+            API.get('/upload/check-zip').then((r) => {
+                console.log(r);
+            });
+        },
     },
     created() {
         this.fetchData();

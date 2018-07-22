@@ -27,6 +27,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => 'auth
         });
     }
     Route::controller('auth', 'AuthController');
+    Route::controller('upload', 'UploadController');
     Route::get('/{capture?}', function () {
         return view('adminapp');
     })->where('capture', '[\/\w\.-]*');
