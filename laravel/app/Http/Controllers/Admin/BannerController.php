@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use JSend;
 use Illuminate\Http\Request;
 use App\Models\Banner;
+use App\Models\Product;
 
 class BannerController extends Controller
 {
@@ -47,5 +48,12 @@ class BannerController extends Controller
         } else {
             return JSend::error('error!');
         }
+    }
+
+    public function getJumpOptions()
+    {
+        $model = Product::select('id', 'video as url', 'name')->get();
+
+        return JSend::success($model);
     }
 }

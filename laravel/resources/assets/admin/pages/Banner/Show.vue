@@ -56,16 +56,45 @@
                     <el-radio v-model="form.status" label="1">是</el-radio>
                     <el-radio v-model="form.status" label="2">否</el-radio>
                 </el-form-item>
+                <el-form-item label="跳转参数" prop="jump">
+                    <el-button size="mini" @click="fetchOptions">选取跳转参数</el-button>
+                </el-form-item>
             </div>
             <el-form-item label="" class="center">
                 <el-button type="primary" @click="submit">{{ $route.params.id ? '修改' : '保存'}}</el-button>
             </el-form-item>
         </el-form>
+        <el-dialog title="跳转参数设置" :visible.sync="dialog_status" width="60%" center>
+            <!-- <el-checkbox v-model="checkAll" v-show="resource.length > 0"
+                @change="handleCheckAllChange">全选</el-checkbox> -->
+            <el-checkbox-group v-model="checked">
+            <el-table :data="jumpList" max-height="400">
+                <el-table-column label="选择" width="130">
+                    <template slot-scope="{$index, row}">
+                        <el-checkbox :label="row.id" :key="row.id">{{  }}</el-checkbox>
+                    </template>
+                </el-table-column>
+                <el-table-column label="名称" width="150" prop="name"></el-table-column>
+                <el-table-column label="图片" width="400">
+                    <template slot-scope="{$index, row}">
+                        <video :src="row.url" controls="controls" height="250"></video>
+                        <!-- <img :src="row.url" alt="" height="100" /> -->
+                    </template>
+                </el-table-column>
+            </el-table>
+            </el-checkbox-group>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialog_status = false">取 消</el-button>
+                <el-button type="primary" @click="confirmResourse">确 定</el-button>
+            </div>
+        </el-dialog>
     </el-card>
 </template>
 
 <script>
-import {Form, FormItem, Button, Input, Card, Select, Option, Radio} from 'element-ui';
+import {
+    Form, FormItem, Button, Input, Card, Select, Option,
+    Radio, Dialog, Checkbox, CheckboxGroup, Table, TableColumn} from 'element-ui';
     import ImgUpload from '../../components/base/ImgUpload.vue';
     import {uploadToken} from '../../api/Cache';
     import BasicUpload from '../../components/base/BasicUpload.vue';
@@ -80,6 +109,11 @@ import {Form, FormItem, Button, Input, Card, Select, Option, Radio} from 'elemen
             ElSelect: Select,
             ElOption: Option,
             ElRadio: Radio,
+            ElDialog: Dialog,
+            ElCheckbox: Checkbox,
+            ElCheckboxGroup: CheckboxGroup,
+            ElTable: Table,
+            ElTableColumn: TableColumn,
             ImgUpload
             // BasicUpload
         },
@@ -92,6 +126,9 @@ import {Form, FormItem, Button, Input, Card, Select, Option, Radio} from 'elemen
                     picture: '',
                     status: '',
                 },
+                jumpList: [],
+                dialog_status: false,
+                checked: [],
                 rules: {
                   picture: [
                     { required: true, message: '请上传图片', trigger: 'blur' },
@@ -116,6 +153,17 @@ import {Form, FormItem, Button, Input, Card, Select, Option, Radio} from 'elemen
             }
         },
         methods: {
+            fetchOptions() {
+                API.get('banner/jump-options').then((r) => {
+                    console.log(r);
+                    this.jumpList = r;
+                });
+                this.dialog_status = true;
+            },
+            confirmResourse() {
+                console.log(this.checked);
+                // this.dialog_status = false;
+            },
             // remoteMethod(query) {
             //     if (query !== '') {
             //         this.loading = true;
