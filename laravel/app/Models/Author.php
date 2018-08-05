@@ -27,4 +27,9 @@ class Author extends Model
             self::updateCachedAll();
         });
     }
+
+    public function room()
+    {
+        return $this->hasOne(AuthorChatRoom::class);
+    }
 }

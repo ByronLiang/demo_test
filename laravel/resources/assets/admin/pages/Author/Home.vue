@@ -1,7 +1,7 @@
 <template>
 <el-card>
     <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="列表" name="first">
+        <el-tab-pane label="列表" name="list">
             <el-table :data="authors" border element-loading-text="拼命加载中" stripe v-loading="loading" style="width: 100%">
             <el-table-column prop="id" label="编号" width="50"></el-table-column>
             <el-table-column prop="name" label="主讲人名称"></el-table-column>
@@ -33,7 +33,7 @@
             </el-pagination>
         </div>
     </el-tab-pane>
-    <el-tab-pane label="添加" name="second">
+    <el-tab-pane label="添加" name="edit">
         <el-form label-width="80px" :model="form" label-position="top" :rules="rules" ref="ruleForm">
             <el-form-item label="主讲人名称">
                 <el-input v-model="form.name"></el-input>
@@ -49,6 +49,26 @@
             <el-form-item label="简介">
                 <el-input type="textarea" v-model="form.introduction"></el-input>
             </el-form-item>
+            <el-form-item label="是否开通聊天室" prop="is_open_chatroom">
+                <el-radio-group v-model="form.is_open_chatroom">
+                    <el-radio label='yes'>是</el-radio>
+                    <el-radio label='no'>否</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <div class="form-item-box" v-show="form.is_open_chatroom == 'yes'">
+                <h3>聊天室配置</h3>
+                <div class="form-box mt-6">
+                    <el-form-item label="面向人群">
+                        <el-radio-group v-model="form.options.listener">
+                            <el-radio label="common_user">全部用户</el-radio>
+                            <el-radio label="pay_user">付费用户</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="自定义房间号">
+                        <el-input v-model="form.options.room_no"></el-input>
+                    </el-form-item>
+                </div>
+            </div>
             <el-form-item class="center">
                 <el-button type="primary" @click="submit">{{ status == 'add' ? '保存' : '更新' }}</el-button>
             </el-form-item>
@@ -58,20 +78,25 @@
 </el-card>
 </template>
 <script>
-import {Table, TableColumn, Tabs, Card, TabPane, Form, FormItem, Input, Button, Pagination} from 'element-ui';
+import {Table, TableColumn, Tabs, Card, TabPane, Form, FormItem, Input, Button, Pagination, Radio, RadioGroup} from 'element-ui';
 // import ImgUpload from '../../components/base/ImgUpload.vue';
 import ImgUpload from '../../components/base/BasicUpload.vue';
 export default {
     data() {
         return {
-            activeName: 'first',
+            activeName: 'list',
             authors: [],
             loading: false,
             form: {
                 id: '',
                 name: '',
                 avatar: '',
-                introduction: ''
+                introduction: '',
+                is_open_chatroom: "yes",
+                options: {
+                    listener: '',
+                    room_no: ''
+                }
             },
             filter: {
                 page: 1
@@ -99,6 +124,8 @@ export default {
         ElInput: Input,
         ElButton: Button,
         ElPagination: Pagination,
+        ElRadio: Radio,
+        ElRadioGroup: RadioGroup,
         ImgUpload
     },
     created() {
@@ -107,14 +134,13 @@ export default {
     },
     methods: {
         handleClick(tab, event) {
-            if (tab.name == 'second') {
+            if (tab.name == 'edit') {
                 this.form.id = '';
                 this.form.name = '';
                 this.form.avatar = '';
                 this.form.introduction = '';
                 this.status = 'add';
             }
-            console.log(tab.name);
         },
         handleEdit(index, row) {
             API.get('author/edit?id=' + row.id).then((r) => {
@@ -122,9 +148,16 @@ export default {
                 this.form.name = r.name;
                 this.form.avatar = r.avatar;
                 this.form.introduction = r.introduction;
+                if (r.room) {
+                    this.form.is_open_chatroom = 'yes';
+                    this.form.options.listener = r.room.listener;
+                    this.form.options.room_no = r.room.room_no;
+                } else {
+                    this.form.is_open_chatroom = 'no';
+                }
             });
             this.status = 'edit';
-            this.activeName = 'second';
+            this.activeName = 'edit';
             // this.$router.push({name: 'Author.show', params: {id: row.id}});
         },
         handleDelete(index, row) {
@@ -147,11 +180,11 @@ export default {
                 if (valid) {
                     if (this.status == 'add') {
                         API.post('author/create', this.form).then((res) => {
-                            this.$router.go(-1);
+                            this.fetchData(1);
                         });
                     } else {
                        API.put('author/update', this.form).then((res) => {
-                            this.$router.go(-1);
+                            this.fetchData(1);
                         });
                     }
                 }
@@ -171,6 +204,7 @@ export default {
                     this.authors = res.data;
                     this.pagination.total = parseInt(res.total);
                     this.pagination.page_size = res.per_page;
+                    this.activeName = 'list';
             }).finally(() => this.loading = false);
         }
     }
@@ -179,7 +213,15 @@ export default {
     // }
 }
 </script>
+
 <style type="scss" scrop>
+    .form-box{
+        .el-form-item {
+            display: inline-block;
+            margin-right: 20px;
+            width: 30%;
+        }
+    }
     .img-upload{
         width: 750px;
         height: 353px;

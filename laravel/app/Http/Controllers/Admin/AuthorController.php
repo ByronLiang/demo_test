@@ -19,29 +19,42 @@ class AuthorController extends Controller
 
     public function postCreate(Request $request)
     {
-        Author::create([
+        $author = Author::create([
             'name' => $request->name,
             'avatar' => $request->avatar,
             'introduction' => $request->introduction,
         ]);
+        if ($request->is_open_chatroom == 'yes') {
+            $author->room()->create($request->options);
+        }
 
         return JSend::success();
     }
 
     public function getEdit(Request $request)
     {
-        $data = Author::find($request->id);
+        $data = Author::with('room')->find($request->id);
 
         return JSend::success($data);
     }
 
     public function putUpdate(Request $request)
     {
-        Author::find($request->id)->update([
+        $author = Author::with('room')->find($request->id);
+        $author->update([
             'name' => $request->name,
             'avatar' => $request->avatar,
             'introduction' => $request->introduction
         ]);
+        if ($request->is_open_chatroom == 'yes') {
+            if ($author->room) {
+                $author->room()->update($request->options);
+            } else {
+                $author->room()->create($request->options);
+            }
+        } else if ($request->is_open_chatroom == 'no') {
+            $author->room()->delete();
+        }
 
         return JSend::success();
     }
