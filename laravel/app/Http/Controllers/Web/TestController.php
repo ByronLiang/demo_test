@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use Mail;
 use App\Models\MongoModels\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -37,5 +38,13 @@ class TestController extends Controller
     {
         $res = User::whereNotIn('name', ['byron'])->get();
         dd($res);
+    }
+
+    public function getEmail()
+    {
+        // dd('mail');
+        $account = 'abc.gmail.com';
+        $code = rand(1111, 9999);
+        return view('email.index', compact('account', 'code'));
     }
 }

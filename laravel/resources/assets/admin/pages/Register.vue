@@ -87,12 +87,19 @@
                 // });
             },
             getCaptcha() {
-                this.isCaptcha = true;
-                API.get('auth/captcha').then((r) => {
-                    console.log(r);
-                    this.captcha = r.captcha;
-                });
-                this.caculateTime();
+                if (! this.form.account) {
+                    Element.$alert('请填写邮箱账号来获取验证码', '验证码警告');
+                } else {
+                    this.isCaptcha = true;
+                    API.get('auth/captcha', {
+                        params: {
+                            account: this.form.account
+                        }
+                    }).then((r) => {
+                        this.captcha = r.captcha;
+                    });
+                    this.caculateTime();
+                }
             },
             caculateTime() {
                 this.time = setInterval(() => {
