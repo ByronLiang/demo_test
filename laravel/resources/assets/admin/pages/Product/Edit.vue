@@ -2,7 +2,7 @@
     <el-card>
         <el-form :inline="true" :model="form.search" @submit.prevent="resetPage"
             border element-loading-text="拼命加载中" stripe v-loading="loading">
-            <div class="flex items-center justify-between">
+<!--             <div class="flex items-center justify-between">
                 <el-form-item label="选择排序">
                     <el-select v-model="form.sort" placeholder="请选择">
                         <el-option
@@ -24,7 +24,7 @@
                     </el-select>
                 </el-form-item>
                 <el-button type="primary" @click="show">主要按钮</el-button>
-            </div>
+            </div> -->
             <div class="form-item-box">
                 <h3>基本信息</h3>
                 <div class="form-box mt-4">
@@ -120,7 +120,6 @@
                     </el-form-item>
                 </div>
                 <el-form-item label="学习资源包">
-
                     <el-upload
                         action="/admin/upload/upload-process"
                         :on-success="handleSuccess"
@@ -132,6 +131,23 @@
                     <el-button size="small" type="normal" @click="checkZip">解压压缩包</el-button>
                 </el-form-item>
             </div>
+            <el-form-item label="生成动态图">
+                    <el-upload
+                        action="/admin/upload/create-gif"
+                        :on-success="handleCreateGif"
+                        :limit="10"
+                        multiple
+                        :show-file-list="false"
+                        :file-list="gifList">
+                      <el-button size="small" type="primary">点击上传</el-button>
+                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb
+                            <img v-if="gifUrl" :src="gifUrl"
+                                style="width: 150px; height: 150px; display: block">
+                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                        </div>
+                    </el-upload>
+                    <!-- <el-button size="small" type="normal" @click="checkZip">解压压缩包</el-button> -->
+                </el-form-item>
             <div class="form-item-box" v-if="form.video">
                 <div style="width: 100%; height: 400px;">
                     <video-play :video_url="form.video" :sample="false" v-if="form.video"></video-play>
@@ -184,6 +200,9 @@ export default {
             author_options: [],
             video_poster: [],
             fileList:[],
+            gifList: [],
+            gifResource: [],
+            gifUrl: '',
         }
     },
     components: {
@@ -351,6 +370,19 @@ export default {
             console.log(r);
             console.log(file);
         },
+        handleCreateGif(r, file, fileList) {
+            this.gifResource.push(r.data.file);
+            if (fileList.length == this.gifResource.length) {
+                console.log('finish');
+                API.post('product/create-gif', {
+                    resource: JSON.stringify(this.gifResource),
+                })
+                .then((r) => {
+                    this.gifUrl = r.path;
+                    console.log(r);
+                });
+            }
+        },
         checkZip() {
             API.get('/upload/check-zip').then((r) => {
                 console.log(r);
@@ -423,5 +455,14 @@ export default {
         height: 100%;
         line-height: 150px;
         margin-top: 5px;
+    }
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 150px;
+        height: 150px;
+        line-height: 150px;
+        text-align: center;
+        display: block;
     }
 </style>

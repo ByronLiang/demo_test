@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Config;
 use JSend;
 use Illuminate\Http\Request;
 // use App\Http\Requests\Admin\Request;
@@ -10,6 +11,8 @@ use App\Models\Author;
 use App\Models\Product;
 use App\Models\SampleFile;
 use Illuminate\Support\Facades\Cache;
+use GifCreator\GifCreator;
+use App\Services\QiniuService;
 
 class ProductController extends Controller
 {
@@ -113,5 +116,27 @@ class ProductController extends Controller
             ->findorFail($id);
 
         return JSend::success($data);
+    }
+
+    // 将资源合成gif并返回生成gif文件地址（考虑直接生成七牛）
+    public function postCreateGif(Request $request)
+    {
+        $path = storage_path('app\create_gif_resource') . '/' . rand(1000, 9999).'_gif_picture.gif';
+        $resources = json_decode($request->resource, true);
+        if (count($resources) > 0) {
+            $gc = new GifCreator();
+            foreach ($resources as $value) {
+                $durations[] = 60;
+            }
+            $gc->create($resources, $durations);
+            $gifBinary = $gc->getGif();
+            file_put_contents($path, $gifBinary);
+            $qiniu = new QiniuService();
+            $key = $qiniu->upload($path);
+            $path = Config::get('filesystems.disks.qiniu')['domain'].$key;
+            return JSend::success(compact('path'));
+        } else {
+            return JSend::error('无上传图片资源');
+        }
     }
 }

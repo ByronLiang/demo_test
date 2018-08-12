@@ -12,7 +12,8 @@
         "overtrue/laravel-filesystem-qiniu": "^0.0.3",
         "peinhu/aetherupload-laravel": "^1.0",
         "simplesoftwareio/simple-qrcode": "1.3.*",
-        "jenssegers/mongodb": "3.0.*"
+        "jenssegers/mongodb": "3.0.*",
+        "sybio/gif-creator" : "1.0.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

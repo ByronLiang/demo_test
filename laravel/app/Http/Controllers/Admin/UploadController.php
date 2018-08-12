@@ -64,6 +64,23 @@ class UploadController extends Controller
         return JSend::error();
     }
 
+    // 上传资源到本地，作为合成gif的资源
+    public function postCreateGif(Request $request)
+    {
+        $targetFile = storage_path('app/create_gif_resource');
+        $file = $request->file('file');
+        if ($file) {
+            $ext = $file->guessClientExtension();
+            $name = bin2hex(random_bytes(5)).'-'.time().'.'.$ext;
+            $file->move($targetFile, $name);
+            $fullPath = $targetFile . '/' . $name;
+
+            return JSend::success(['file' => $fullPath]);
+        }
+
+        return JSend::error();
+    }
+
     public function getCheckZip()
     {
         $zipFile = $this->path . '/bfff61df97-1532235186.zip';
@@ -78,7 +95,7 @@ class UploadController extends Controller
     protected function get_zip_originalsize($filename, $path)
     {
         //先判断待解压的文件是否存在
-        if(!file_exists($filename)){
+        if(! file_exists($filename)){
             die("文件 $filename 不存在！");
         }
         //打开压缩包
