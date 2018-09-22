@@ -7,6 +7,7 @@ use App\Models\MongoModels\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\QiniuService;
+use App\Models\GiftCode;
 
 class TestController extends Controller
 {
@@ -46,5 +47,12 @@ class TestController extends Controller
         $account = 'abc.gmail.com';
         $code = rand(1111, 9999);
         return view('email.index', compact('account', 'code'));
+    }
+
+    public function getGiftCode(GiftCode $code)
+    {
+        $data = $code->status('unfreeze')->get()->groupBy('code_status')->all();
+            // ->paginate();
+        dd($data);
     }
 }
