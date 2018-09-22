@@ -159,6 +159,7 @@ return [
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         Ganguo\JSend\JSendServiceProvider::class,
         AetherUpload\AetherUploadServiceProvider::class,
+        Orangehill\Iseed\IseedServiceProvider::class,
         // Jenssegers\Mongodb\MongodbServiceProvider::class,
 //        Overtrue\LaravelFilesystem\Qiniu\QiniuStorageServiceProvider::class,
     ],

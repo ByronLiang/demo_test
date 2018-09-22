@@ -15,7 +15,11 @@ class DatabaseSeeder extends Seeder
             $this->call(TestSeed::class);
             $this->call(AdminTableSeeder::class);
             $this->call(AuthorSeed::class);
-        } else {
+            $this->call('ProductTableSeeder');
+            $this->call('CatagoryTableSeeder');
+            $this->call('AuthorChatroomTableSeeder');
+            $this->call('ProductCatagoryTableSeeder');
+    } else {
             $this->call(AdminTableSeeder::class);
         }
     }
