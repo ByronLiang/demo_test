@@ -17,17 +17,18 @@ class CreateTables extends Migration
             $table->increments('id');
             $table->string('avatar');
             $table->string('name');
-            $table->string('wechat_number');
+            $table->string('phone');
             $table->unsignedInteger('point')->default(0);
             $table->tinyInteger('status')->default(0)->comment('用户状态 0正常 1冻结');
-            // $table->string('password');
-            $table->string('api_token', 64);
-            $table->string('session_token', 64);
+            $table->string('password');
+            // $table->string('api_token', 64);
+            // $table->string('session_token', 64);
             // ADD MORE FIELDS
             // $table->rememberToken();
             $table->timestamps();
-            $table->unique('wechat_number');
-            $table->unique('api_token');
+            // $table->unique('wechat_number');
+            // $table->unique('api_token');
+            $table->softDeletes();
         });
 
         // DO NOT CHANGE TABLE NAME

@@ -13,11 +13,11 @@ class DatabaseSeeder extends Seeder
     {
         if (config('app.env') == 'test') {
             // $this->call(TestSeed::class);
-            // $this->call(AdminTableSeeder::class);
-            // $this->call(AuthorSeed::class);
+            $this->call(AdminTableSeeder::class);
+            $this->call(AuthorSeed::class);
             // $this->call('ProductTableSeeder');
-            // $this->call('CatagoryTableSeeder');
-            // $this->call('AuthorChatroomTableSeeder');
+            $this->call('CatagoryTableSeeder');
+            $this->call('AuthorChatroomTableSeeder');
             // $this->call('ProductCatagoryTableSeeder');
             $this->call(CodeSeeder::class);
     } else {
