@@ -1,6 +1,10 @@
 <template>
     <div>
         <el-card class="mb-2">
+            <span v-text="$t('message.hello')"></span>
+            <span v-text="$t('title')"></span>
+        </el-card>
+        <el-card class="mb-2">
             <quill v-model="form.content" placeholder="请输入内容"></quill>
         </el-card>
         <el-card>

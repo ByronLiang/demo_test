@@ -6,6 +6,17 @@
                 <el-button type="text" @click="isCollapse = !isCollapse">
                     <i class="fa fa-bars" aria-hidden="true"></i>
                 </el-button>
+                <div>
+                <el-dropdown trigger="click">
+                    <div class="click-area flex ">
+                        <div>切换语言</div>
+                    </div>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item @click.native="changeLangEvent('cn')">中文</el-dropdown-item>
+                        <el-dropdown-item @click.native="changeLangEvent('en')">日本语</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+                </div>
                 <el-dropdown trigger="click" v-if="my">
                     <div class="click-area flex ">
                         <div><img class="avatar" src="https://picsum.photos/50/?random"></div>
@@ -59,6 +70,7 @@
                 activeMenu: '',
                 defaultOpeneds: [],
                 isCollapse: false,
+                lang: 'cn',
             };
         },
         computed: {
@@ -72,6 +84,27 @@
                 API.get('my/logout').then((res) => {
                     loadingInstance.close();
                     this.$router.push('/login');
+                });
+            },
+            changeLangEvent(val) {
+               Element.$confirm("确认切换语言", '提示', {
+                   confirmButtonText: '确认',
+                   cancelButtonText: '取消',
+                   type: 'warning'
+                }).then(() => {
+                    console.log(val);
+                    this.$i18n.locale=val;
+                   // if ( this.lang === 'cn' ) {
+                   //    this.lang = 'en-US';
+                   //    this.$i18n.locale = this.lang;//关键语句
+                   // }else {
+                   //    this.lang = 'zh-CN';
+                   //    this.$i18n.locale = this.lang;//关键语句
+                   // }
+                }).catch(() => {
+                   Element.$message({
+                       type: 'info',
+                   });
                 });
             },
         },
