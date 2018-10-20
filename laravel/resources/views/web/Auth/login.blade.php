@@ -15,6 +15,7 @@
     </div>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     <a class="btn btn-success btn-block" type="button" href="{{ action('Web\WechatController@getWechatCode') }}">微信登录</a>
+    <a class="btn btn-primary btn-block" type="button" href="{{ action('Web\SocialiteController@index', ['type' => 'github']) }}">GitHub</a>
 </form>
 
 </div>

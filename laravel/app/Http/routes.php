@@ -49,6 +49,9 @@ Route::group(['prefix' => 'web',
     Route::controller('test', 'TestController');
     Route::controller('wechat', 'WechatController');
     Route::controller('home', 'HomeController');
+
+    Route::get('socialite/{type}', 'SocialiteController@index');
+    Route::get('socialite_callback/github', 'SocialiteController@handleGitHubCallback');
     Route::group(['middleware' => 'auth'], function () {
     });
 });

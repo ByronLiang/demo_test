@@ -20,4 +20,9 @@ return [
         'paycertpath' => env('WECHAT_PAY_CERT_PATH'),
         'paykeypath' => env('WECHAT_PAY_KEY_PATH'),
     ],
+
+    'github' => [
+        'client_id' => env('GITHUB_APP_ID'),
+        'client_secret' => env('GITHUB_APP_SECRET'),
+    ],
 ];
