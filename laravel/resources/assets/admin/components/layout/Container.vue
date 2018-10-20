@@ -7,31 +7,30 @@
                     <i class="fa fa-bars" aria-hidden="true"></i>
                 </el-button>
                 <div>
-                <el-dropdown trigger="click">
-                    <div class="click-area flex ">
-                        <div>切换语言</div>
-                    </div>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item @click.native="changeLangEvent('cn')">中文</el-dropdown-item>
-                        <el-dropdown-item @click.native="changeLangEvent('en')">日本语</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-                </div>
-                <el-dropdown trigger="click" v-if="my">
-                    <div class="click-area flex ">
-                        <div><img class="avatar" src="https://picsum.photos/50/?random"></div>
-                        <div class="flex flex-col justify-around">
-                            <div>{{ my.name || 'admin' }}</div>
-                            <div>{{ my.email || 'admin@ganguo.hk' }}</div>
+                    <el-dropdown trigger="click">
+                        <div class="click-area flex ">
+                            <div>切换语言</div>
                         </div>
-                    </div>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item @click.native="$router.push('/my-profile')">个人信息</el-dropdown-item>
-                        <el-dropdown-item @click.native="logout">注销</el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item @click.native="changeLangEvent('cn')">中文</el-dropdown-item>
+                            <el-dropdown-item @click.native="changeLangEvent('en')">日本语</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                    <el-dropdown trigger="click" v-if="my">
+                        <div class="click-area flex ">
+                            <div><img class="avatar" src="https://picsum.photos/50/?random"></div>
+                            <div class="flex flex-col justify-around">
+                                <div>{{ my.name || 'admin' }}</div>
+                                <div>{{ my.email || 'admin@ganguo.hk' }}</div>
+                            </div>
+                        </div>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item @click.native="$router.push('/my-profile')">个人信息</el-dropdown-item>
+                            <el-dropdown-item @click.native="logout">注销</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </div>
             </el-header>
-
             <el-main>
                 <!--<breadcrumb></breadcrumb>-->
                 <router-view></router-view>

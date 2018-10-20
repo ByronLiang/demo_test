@@ -15,7 +15,7 @@ export default {
         ...elementZhLocale
     },
     ja: {
+        ...jaLocal,
         ...elementJaLocale,
-        ...jaLocal
     }
 }
